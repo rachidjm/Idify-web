@@ -23,7 +23,6 @@
     pendingPlan: null,
     annotatedRanges: [],
     showLiveCaption: false,
-    previewMode: false,
     currentMeta: null,
     plantillaActual: null,
   };
@@ -41,13 +40,6 @@
     creacion_pagina_producto: "Creación de página de producto",
     automatizacion_meta_ads: "Automatización de Meta Ads",
     personalizado: "Personalizado",
-  };
-
-  /* Planes de ejemplo para simular en la vista previa el modal de "sin créditos
-     suficientes" sin llamar al servidor — mismo shape que PLANES en _usuarios.js. */
-  const FAKE_PLANES_DEMO = {
-    pro: { nombre: "Pro", creditos: 200, precio: 19 },
-    empresa: { nombre: "Empresa", creditos: 1000, precio: 59 },
   };
 
   /* ---------- Plantillas de partida para el preset Skill — se eligen ANTES de
@@ -104,110 +96,6 @@
         { id: "restricciones", titulo: "Restricciones", contenido: "La clave de la inteligencia artificial nunca debe llegar al navegador del usuario. Los créditos se comprueban y se descuentan siempre en el servidor, nunca solo en pantalla. Ningún documento subido por el usuario se guarda más tiempo del necesario." },
         { id: "formato", titulo: "Formato de salida", contenido: "Definición del producto, de los planes y del recorrido de prueba, lista para iniciar la construcción real de la app." },
       ],
-    },
-  };
-
-  /* ---------- Datos de ejemplo — solo para revisar el diseño de las dos
-     funciones nuevas (texto anotado + ficha de skill) sin gastar cuota de
-     IA. No llama nunca a /api/generar ni /api/corregir mientras está activa. ---------- */
-  const MOCK = {
-    prompt: {
-      secciones: [
-        { id: "rol", titulo: "Rol", contenido: "Actúas como un diseñador de producto UX/UI especializado en comparadores online de bicicletas eléctricas." },
-        { id: "contexto", titulo: "Contexto", contenido: "Se pide una aplicación web que permita comparar bicicletas por autonomía, tipo de ruta y precio, con una paleta de blanco, verde y gris oscuro." },
-        { id: "tarea", titulo: "Tarea principal", contenido: "Diseñar la estructura, las funcionalidades clave y la línea visual del comparador, detallando cada ficha de producto y su capacidad/autonomía." },
-        { id: "restricciones", titulo: "Restricciones", contenido: "La paleta de la interfaz debe limitarse a blanco, verde y tonos oscuros. El tono debe transmitir profesionalismo y un enfoque deportivo." },
-        { id: "formato", titulo: "Formato de salida", contenido: "Documento de especificación estructurado, listo para entregar a un equipo de desarrollo." },
-      ],
-      resultado: [
-        "Actúa como un diseñador de producto UX/UI especializado en comparadores online de bicicletas eléctricas.",
-        "### Contexto",
-        "Se pide una aplicación web que permita comparar bicicletas por autonomía, tipo de ruta y precio, con una paleta de blanco, verde y gris oscuro.",
-        "### Tarea principal",
-        "Diseña la estructura, las funcionalidades clave y la línea visual del comparador, detallando cada ficha de producto y su capacidad o autonomía.",
-        "### Restricciones",
-        "- La paleta de la interfaz debe limitarse a: blanco, verde y tonos oscuros.\n- El tono debe transmitir profesionalismo y un enfoque deportivo.",
-        "### Formato de salida",
-        "Genera un documento de especificación estructurado, listo para entregar a un equipo de desarrollo.",
-      ].join("\n\n"),
-    },
-    skillNiveles: {
-      facil: {
-        secciones: [
-          { id: "nombre", titulo: "Nombre de la skill", contenido: "resumen-de-reunion" },
-          { id: "activacion", titulo: "Cuándo se activa", contenido: "Cuando el usuario pega la transcripción de una reunión y pide un resumen con los puntos clave." },
-          { id: "pasos", titulo: "Pasos a seguir", contenido: "1. Leer la transcripción completa.\n2. Extraer decisiones y tareas asignadas.\n3. Redactar un resumen breve." },
-          { id: "restricciones", titulo: "Restricciones", contenido: "No inventar decisiones que no aparezcan en el texto." },
-          { id: "formato", titulo: "Formato de salida", contenido: "Lista de decisiones, lista de tareas con responsable, resumen de 3 líneas." },
-        ],
-        resultado: [
-          "---",
-          "name: resumen-de-reunion",
-          "description: Cuando el usuario pega la transcripción de una reunión y pide un resumen con los puntos clave.",
-          "---",
-          "",
-          "## Pasos",
-          "1. Leer la transcripción completa.\n2. Extraer decisiones y tareas asignadas.\n3. Redactar un resumen breve.",
-          "## Restricciones",
-          "No inventar decisiones que no aparezcan en el texto.",
-          "## Formato de salida",
-          "Lista de decisiones, lista de tareas con responsable, resumen de 3 líneas.",
-        ].join("\n\n"),
-        categoria: "personalizado",
-      },
-      media: {
-        secciones: [
-          { id: "nombre", titulo: "Nombre de la skill", contenido: "asistente-soporte-nivel1" },
-          { id: "activacion", titulo: "Cuándo se activa", contenido: "Cuando un cliente escribe al chat de soporte preguntando por el estado de su pedido o pidiendo ayuda con un problema común." },
-          { id: "pasos", titulo: "Pasos a seguir", contenido: "1. Identificar si la consulta es sobre estado de pedido, devolución o incidencia técnica.\n2. Responder con un tono cercano y profesional, citando la política correspondiente.\n3. Si el cliente muestra frustración o el problema no tiene solución estándar, escalar a un humano de inmediato." },
-          { id: "restricciones", titulo: "Restricciones", contenido: "Nunca prometer reembolsos ni plazos que no estén confirmados en la política oficial. No inventar números de seguimiento." },
-          { id: "formato", titulo: "Formato de salida", contenido: "Respuesta breve en el mismo canal del cliente, con un cierre que ofrezca ayuda adicional." },
-        ],
-        resultado: [
-          "---",
-          "name: asistente-soporte-nivel1",
-          "description: Cuando un cliente escribe al chat de soporte preguntando por el estado de su pedido o pidiendo ayuda con un problema común.",
-          "---",
-          "",
-          "## Pasos",
-          "1. Identificar si la consulta es sobre estado de pedido, devolución o incidencia técnica.\n2. Responder con un tono cercano y profesional, citando la política correspondiente.\n3. Si el cliente muestra frustración o el problema no tiene solución estándar, escalar a un humano de inmediato.",
-          "## Restricciones",
-          "Nunca prometer reembolsos ni plazos que no estén confirmados en la política oficial. No inventar números de seguimiento.",
-          "## Ejemplo",
-          "Cliente: \"llevo una semana esperando mi pedido\" -> Responder con el estado si se conoce, disculpa breve, y ofrecer escalar si supera el plazo de la política.",
-          "## Formato de salida",
-          "Respuesta breve en el mismo canal del cliente, con un cierre que ofrezca ayuda adicional.",
-        ].join("\n\n"),
-        categoria: "automatizacion_servicio",
-      },
-      dificil: {
-        secciones: [
-          { id: "nombre", titulo: "Nombre de la skill", contenido: "gestor-campanas-meta-ads" },
-          { id: "activacion", titulo: "Cuándo se activa", contenido: "Cuando el usuario pide crear o ajustar una campaña de anuncios en Meta (Facebook/Instagram) a partir de un objetivo de negocio." },
-          { id: "pasos", titulo: "Pasos a seguir", contenido: "1. Definir el objetivo de la campaña (tráfico, conversiones o reconocimiento de marca).\n2. Construir la segmentación de audiencia siguiendo reference/segmentos.md.\n3. Elegir el formato de anuncio más adecuado con templates/formatos-anuncio.md.\n4. Calcular el presupuesto mínimo de prueba con scripts/calculadora_presupuesto.py." },
-          { id: "restricciones", titulo: "Restricciones", contenido: "No prometer resultados de conversión garantizados. Siempre proponer primero un presupuesto de prueba antes de escalar el gasto." },
-          { id: "formato", titulo: "Formato de salida", contenido: "Brief de campaña en Markdown con objetivo, audiencia, formato de anuncio elegido, presupuesto sugerido y métricas a vigilar según el objetivo." },
-        ],
-        resultado: [
-          "---",
-          "name: gestor-campanas-meta-ads",
-          "description: Cuando el usuario pide crear o ajustar una campaña de anuncios en Meta (Facebook/Instagram) a partir de un objetivo de negocio.",
-          "---",
-          "",
-          "## Pasos",
-          "1. Definir el objetivo de la campaña (tráfico, conversiones o reconocimiento de marca).\n2. Construir la segmentación de audiencia siguiendo reference/segmentos.md.\n3. Elegir el formato de anuncio más adecuado con templates/formatos-anuncio.md.\n4. Calcular el presupuesto mínimo de prueba con scripts/calculadora_presupuesto.py.",
-          "## Restricciones",
-          "No prometer resultados de conversión garantizados. Siempre proponer primero un presupuesto de prueba antes de escalar el gasto.",
-          "## Formato de salida",
-          "Brief de campaña en Markdown con objetivo, audiencia, formato de anuncio elegido, presupuesto sugerido y métricas a vigilar según el objetivo.",
-        ].join("\n\n"),
-        categoria: "automatizacion_meta_ads",
-        archivos: [
-          { ruta: "reference/segmentos.md", contenido: "# Segmentos de audiencia\n\n- Intención de compra alta: visitó la web en los últimos 30 días\n- Similar a clientes: lookalike 1-3% sobre compradores\n- Reconocimiento: intereses amplios del sector, sin remarketing" },
-          { ruta: "templates/formatos-anuncio.md", contenido: "# Formatos de anuncio\n\n- Imagen única: para reconocimiento de marca\n- Carrusel: para catálogo de varios productos\n- Video corto (<15s): para tráfico y conversiones" },
-          { ruta: "scripts/calculadora_presupuesto.py", contenido: "# Ejemplo simulado — no se ejecuta de verdad en esta vista previa.\ndef presupuesto_prueba(objetivo, dias=7):\n    base = {'trafico': 5, 'conversiones': 10, 'reconocimiento': 3}\n    return base.get(objetivo, 5) * dias" },
-        ],
-      },
     },
   };
 
@@ -315,7 +203,6 @@
     $$(".preset-seg button", $("#presetSeg")).forEach((b) => b.classList.toggle("active", b.dataset.preset === p));
     actualizarIndicadorPreset();
 
-    $("#mockPreviewWrapPrompt").hidden = p !== "prompt";
     $("#mockPreviewWrapSkill").hidden = p !== "skill";
     $("#templateSection").hidden = p !== "skill";
   }
@@ -480,7 +367,6 @@
   /* ---------- Pipeline principal ---------- */
   async function procesarPipeline(idea) {
     if (!idea) return;
-    state.previewMode = false;
     $("#fallbackBox").classList.remove("show");
     $("#resultsGrid").classList.remove("show");
     $("#resultsDesktop").classList.remove("show");
@@ -540,72 +426,6 @@
     $("#resultsDesktop").classList.add("show");
   }
 
-  /* ---------- Vista previa con datos de ejemplo — no llama a ninguna IA.
-     Para "skill" recibe el nivel elegido (facil/media/dificil) para poder
-     revisar los 3 costes/resultados distintos del punto 1 sin gastar cuota. ---------- */
-  async function mockPipeline(nivelSkill) {
-    state.previewMode = true;
-    $("#fallbackBox").classList.remove("show");
-    $("#resultsGrid").classList.remove("show");
-    $("#resultsDesktop").classList.remove("show");
-    hidePopover();
-    $("#transcriptToggleWrap").hidden = true;
-    $("#stepsPanel").hidden = false;
-    $("#stepsPanel").classList.add("show");
-    setStatus("");
-
-    renderSteps("entender", []);
-    await new Promise((r) => setTimeout(r, 400));
-    renderSteps("redactar", ["entender"]);
-    await new Promise((r) => setTimeout(r, 400));
-    renderSteps(null, ["entender", "redactar"]);
-
-    const esSkill = state.preset === "skill";
-    const nivel = esSkill ? (nivelSkill || "facil") : null;
-    const mock = esSkill ? MOCK.skillNiveles[nivel] : MOCK.prompt;
-    const outputLabel = state.preset === "prompt" ? "Prompt final" : "SKILL.md";
-    $("#outputLabel").textContent = outputLabel;
-    $("#outputLabelDesktop").textContent = outputLabel;
-
-    const meta = esSkill
-      ? { categoria: mock.categoria, nivel, coste: NIVEL_COSTE_CLIENTE[nivel], archivos: mock.archivos || null }
-      : null;
-    // Clonar las secciones para que corregirlas en la vista previa nunca mute el objeto MOCK original.
-    actualizarResultado(JSON.parse(JSON.stringify(mock.secciones)), mock.resultado, meta);
-
-    $("#stepsPanel").classList.remove("show");
-    $("#stepsPanel").hidden = true;
-    $("#resultsGrid").classList.add("show");
-    $("#resultsDesktop").classList.add("show");
-    setStatus("Datos de ejemplo — nada de esto ha llamado a Gemini ni a Claude.");
-    setTimeout(() => setStatus(""), 3000);
-  }
-
-  /* ---------- Simula el modal de "sin créditos suficientes" sin llamar al servidor. ---------- */
-  function mockSimularSinCreditos() {
-    openUpgradeModal(FAKE_PLANES_DEMO);
-    setStatus("Simulado — no ha llamado a ningún servidor.");
-    setTimeout(() => setStatus(""), 2500);
-  }
-
-  /* ---------- Corrección simulada (vista previa) — nunca llama a la IA.
-     Sustituye el contenido antiguo de la sección por el nuevo directamente
-     en el texto final, para poder revisar el recoloreado sin gastar cuota. ---------- */
-  function mockCorregir(id, correccion) {
-    const sec = state.secciones.find((s) => s.id === id);
-    if (!sec) return;
-    const anterior = sec.contenido;
-    sec.contenido = correccion;
-    let nuevoResultado = $("#finalOutput").textContent;
-    if (anterior && nuevoResultado.includes(anterior)) {
-      nuevoResultado = nuevoResultado.replace(anterior, correccion);
-    }
-    // meta sin pasar (undefined) -> actualizarResultado reutiliza state.currentMeta tal cual.
-    actualizarResultado(state.secciones, nuevoResultado);
-    setStatus("Corrección simulada — no ha llamado a ninguna IA.");
-    setTimeout(() => setStatus(""), 2200);
-  }
-
   /* ---------- Secciones y corrección ---------- */
   function renderSecciones() {
     const list = $("#sectionsList");
@@ -661,7 +481,6 @@
   async function corregirSeccion(id) {
     const correccion = $("#ctext-" + id).value.trim();
     if (!correccion) return;
-    if (state.previewMode) { mockCorregir(id, correccion); return; }
     setStatus("Aplicando corrección…");
 
     const { ok, status, data } = await api("corregir", {
@@ -1001,11 +820,6 @@
     if (!popoverContext) return;
     const correccion = $("#popoverInput").value.trim();
     if (!correccion) return;
-    if (state.previewMode) {
-      mockCorregir(popoverContext.sectionId, correccion);
-      hidePopover();
-      return;
-    }
     setStatus("Aplicando corrección…");
 
     const { ok, status, data } = await api("corregir", {
@@ -1063,7 +877,6 @@
     $("#ideaInput").value = "";
     state.secciones = [];
     state.currentMeta = null;
-    state.previewMode = false;
     seleccionarPlantilla(null);
     setStatus("");
   }
@@ -1151,8 +964,6 @@
     buildMeter($("#micMeterRight"), 5, 0.25);
 
     $("#liveCaptionToggle").addEventListener("click", toggleLiveCaption);
-    $("#mockPreviewBtn").addEventListener("click", () => mockPipeline());
-    $("#mockSinCreditosBtn").addEventListener("click", mockSimularSinCreditos);
     $("#copyUsoSkillBtn").addEventListener("click", () => copiarTexto($("#usoSkillOutput").textContent));
     $("#downloadZipBtn").addEventListener("click", descargarZipSkillActual);
     $("#fallbackToggle").addEventListener("click", toggleFallback);
