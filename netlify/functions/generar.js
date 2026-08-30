@@ -11,6 +11,7 @@ import {
   CATEGORIAS_SKILL,
   conEnfoquePorCategoria,
   conPlantillaDePartida,
+  systemPromptDeUso,
 } from './_prompts.js';
 
 const IDEA_MAX_LEN = 4000;
@@ -32,6 +33,7 @@ export default async (req) => {
   const idea = String(body.idea || '').trim().slice(0, IDEA_MAX_LEN);
   const preset = body.preset === 'skill' ? 'skill' : 'prompt';
   const plantilla = preset === 'skill' && Array.isArray(body.plantilla) ? body.plantilla : null;
+  const plantillaId = preset === 'skill' && typeof body.plantillaId === 'string' ? body.plantillaId : null;
   if (!idea) return humanError('Cuéntame tu idea antes de generar.', 400);
 
   const usuario = await getUsuario(email);
@@ -39,7 +41,7 @@ export default async (req) => {
   renovarSiToca(usuario);
 
   if (preset === 'prompt') return generarPrompt(email, usuario, idea);
-  return generarSkill(email, usuario, idea, plantilla);
+  return generarSkill(email, usuario, idea, plantilla, plantillaId);
 };
 
 /* Prompt normal: 1 crédito fijo, gratis mientras tengas créditos de bienvenida — comportamiento sin cambios. */
@@ -73,7 +75,7 @@ async function generarPrompt(email, usuario, idea) {
    Orden: extraer (barato, incluye el nivel) -> calcular coste -> comprobar créditos ANTES
    de generar el resultado caro -> si no llegan, no se ejecuta nada más -> si llegan, se
    descuentan y se genera -> si falla después de descontar, se reembolsa. */
-async function generarSkill(email, usuario, idea, plantilla) {
+async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
   let secciones, nivel, categoria;
   try {
     const systemExtraccionFinal = conPlantillaDePartida(systemExtraccion('skill'), plantilla);
@@ -122,10 +124,23 @@ async function generarSkill(email, usuario, idea, plantilla) {
       archivos = Array.isArray(paquete.archivos) ? paquete.archivos : [];
     }
 
+    // Capa 3 (mejor esfuerzo, no gasta crédito aparte ni hace fallar la generación si
+    // se cae): redacta la caja "Prompt para usar esta skill" con el mismo nivel de
+    // detalle que un ejemplo real de esa skill, sin copiar su nicho ni sus datos.
+    let promptDeUso = null;
+    const systemUso = plantillaId ? systemPromptDeUso(plantillaId) : null;
+    if (systemUso) {
+      try {
+        promptDeUso = await llamarIA(systemUso, JSON.stringify(secciones));
+      } catch (e) {
+        console.warn('generar.js (prompt de uso) falló, se usa el texto local sin IA', e.message);
+      }
+    }
+
     registrarHistorial(usuario, `generar-skill-${nivel}`, coste);
     await guardarUsuario(email, usuario);
 
-    return json({ secciones, resultado_final, archivos, nivel, categoria, coste, creditos: usuario.creditos });
+    return json({ secciones, resultado_final, archivos, nivel, categoria, coste, promptDeUso, creditos: usuario.creditos });
   } catch (e) {
     console.error('generar.js (redacción skill) failed', e);
     usuario.creditos += coste;

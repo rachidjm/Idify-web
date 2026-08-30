@@ -496,6 +496,7 @@
     const payload = { idea, preset: state.preset };
     if (state.preset === "skill" && state.plantillaActual) {
       payload.plantilla = PLANTILLAS_SKILL[state.plantillaActual].secciones;
+      payload.plantillaId = state.plantillaActual;
     }
     const { ok, status, data } = await api("generar", {
       method: "POST",
@@ -524,7 +525,7 @@
     $("#outputLabelDesktop").textContent = outputLabel;
 
     const meta = state.preset === "skill" && data.nivel
-      ? { categoria: data.categoria, nivel: data.nivel, coste: data.coste, archivos: data.archivos || null }
+      ? { categoria: data.categoria, nivel: data.nivel, coste: data.coste, archivos: data.archivos || null, promptDeUso: data.promptDeUso || null }
       : null;
     actualizarResultado(data.secciones || [], data.resultado_final || "", meta);
 
@@ -695,7 +696,7 @@
 
     if (metaActual && metaActual.nivel) {
       mostrarFichaSkill(metaActual);
-      mostrarUsoSkill(secciones);
+      mostrarUsoSkill(secciones, metaActual.promptDeUso);
       mostrarArchivosSkill(metaActual.archivos);
     } else {
       ocultarFichaSkill();
@@ -724,8 +725,10 @@
     $("#skillInfoCard").classList.remove("show");
   }
 
-  /* ---------- "Prompt para usar esta skill" — se construye sin IA, con datos que ya
-     existen en las secciones (nombre exacto + la tarea ya extraída en la Capa 1). ---------- */
+  /* ---------- "Prompt para usar esta skill" — si se eligió una plantilla, el servidor
+     ya la redactó con IA (Capa 3, ver generar.js) usando el Prompt.txt de esa skill como
+     referencia de estructura. Si no hay plantilla (o la IA falló), se construye sin IA
+     con datos que ya existen en las secciones, como antes. ---------- */
   function construirPromptDeUso(secciones) {
     const nombre = ((secciones.find((s) => s.id === "nombre") || {}).contenido || "").trim();
     let tarea = ((secciones.find((s) => s.id === "activacion") || {}).contenido || "").trim();
@@ -733,8 +736,8 @@
     return 'Usa la skill "' + nombre + '" para lo siguiente: ' + tarea + '.' +
       '\n\nSi no la tienes instalada todavía, instala primero el SKILL.md que acabas de descargar.';
   }
-  function mostrarUsoSkill(secciones) {
-    $("#usoSkillOutput").textContent = construirPromptDeUso(secciones);
+  function mostrarUsoSkill(secciones, promptDeUso) {
+    $("#usoSkillOutput").textContent = promptDeUso || construirPromptDeUso(secciones);
     $("#usoSkillCard").hidden = false;
   }
   function ocultarUsoSkill() { $("#usoSkillCard").hidden = true; }
