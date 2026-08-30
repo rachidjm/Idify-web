@@ -1,0 +1,6 @@
+node_modules/
+.env
+.netlify/
+Base Idify Skills/
+idify-web/
+idify-web.zip

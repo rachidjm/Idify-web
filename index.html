@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>idify — habla tu idea, recibe el prompt</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="styles.css?v=7">
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">idify</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="app.html">App</a>
+      <a href="cuenta.html">Cuenta</a>
+      <a href="precios.html">Precios</a>
+    </nav>
+    <a href="app.html" class="btn btn--primary btn--sm">Abrir la app</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="eyebrow">VOZ&nbsp;→&nbsp;PROMPT&nbsp;·&nbsp;VOZ&nbsp;→&nbsp;SKILL</div>
+
+      <div class="dial" aria-hidden="true">
+        <div class="dial-meter dial-meter--left" id="meterLeft"></div>
+        <button class="dial-core" id="dialCore" type="button" aria-label="Vista previa: tocar para escuchar">
+          <span class="dial-ring dial-ring--1"></span>
+          <span class="dial-ring dial-ring--2"></span>
+          <svg class="dial-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="9" y="2" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M5 11a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="dial-meter dial-meter--right" id="meterRight"></div>
+      </div>
+
+      <h1>De idea a hechos en tres sencillos pasos.</h1>
+      <p class="lede">Una idea hablada se organiza en secciones y se convierte en un prompt profesional o en una Claude Skill completa. Corrige cualquier parte volviendo a hablar solo de eso.</p>
+
+      <div class="hero-ctas">
+        <a href="app.html" class="btn btn--primary">Abrir la app</a>
+        <a href="precios.html" class="btn btn--ghost">Ver precios</a>
+      </div>
+      <span class="hero-note">Gratis — 3 usos incluidos, sin tarjeta</span>
+    </div>
+  </section>
+
+  <section class="how" aria-label="Cómo funciona por dentro">
+    <div class="container">
+      <div class="how-panel">
+        <div class="how-head">
+          <span class="how-label"><span class="how-dot"></span>CÓMO FUNCIONA</span>
+          <span class="how-tag mono">2 PASOS + CORRECCIÓN</span>
+        </div>
+
+        <div class="how-flow">
+          <div class="how-stage">
+            <div class="how-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="2" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M5 11a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="how-stage-title">Tu voz</div>
+            <p class="how-stage-desc">Hablas tu idea tal cual la piensas, sin ordenarla antes.</p>
+          </div>
+
+          <div class="how-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="how-stage">
+            <div class="how-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M4 12h10M4 18h13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="how-stage-title">Secciones</div>
+            <p class="how-stage-desc">Se organiza en bloques claros — rol, contexto, restricciones…</p>
+          </div>
+
+          <div class="how-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="how-stage">
+            <div class="how-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-stage-title">Prompt / Skill</div>
+            <p class="how-stage-desc">Resultado final, listo para copiar o descargar.</p>
+          </div>
+        </div>
+
+        <div class="how-loop">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 14l-5-5 5-5M4 9h10a6 6 0 0 1 6 6v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="mono">¿Algo no cuadra? Corrige solo esa sección hablando de nuevo.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="results" aria-label="Resultados creados con Idify">
+    <div class="container">
+      <div class="results-head">
+        <span class="how-label"><span class="how-dot"></span>RESULTADOS</span>
+        <div class="results-nav">
+          <button class="carousel-btn" id="resultsPrev" type="button" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="carousel-btn" id="resultsNext" type="button" aria-label="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <p class="results-lede">Webs y proyectos reales creados a partir de un prompt generado con Idify.</p>
+
+      <div class="carousel" id="resultsCarousel">
+        <div class="carousel-track" id="resultsTrack">
+          <article class="result-card" data-idx="0" role="button" tabindex="0">
+            <div class="result-thumb result-thumb--empty">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="result-caption">
+              <div class="result-name">Próximamente</div>
+              <div class="result-tag mono">EJEMPLO 01</div>
+            </div>
+          </article>
+          <article class="result-card" data-idx="1" role="button" tabindex="0">
+            <div class="result-thumb result-thumb--empty">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="result-caption">
+              <div class="result-name">Próximamente</div>
+              <div class="result-tag mono">EJEMPLO 02</div>
+            </div>
+          </article>
+          <article class="result-card" data-idx="2" role="button" tabindex="0">
+            <div class="result-thumb result-thumb--empty">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="result-caption">
+              <div class="result-name">Próximamente</div>
+              <div class="result-tag mono">EJEMPLO 03</div>
+            </div>
+          </article>
+          <article class="result-card" data-idx="3" role="button" tabindex="0">
+            <div class="result-thumb result-thumb--empty">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="result-caption">
+              <div class="result-name">Próximamente</div>
+              <div class="result-tag mono">EJEMPLO 04</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="cta-strip">
+      <div>
+        <h2>Gratis para probar.</h2>
+        <p>3 usos incluidos — sin tarjeta.</p>
+      </div>
+      <a href="app.html" class="btn btn--primary">Empezar</a>
+    </div>
+  </section>
+
+</main>
+
+<div class="modal-overlay" id="resultModal" hidden>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" type="button" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+
+    <div class="modal-media">
+      <div class="modal-image" id="modalImage">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </div>
+      <button class="modal-nav modal-nav--prev" id="modalPrev" type="button" aria-label="Imagen anterior">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="modal-nav modal-nav--next" id="modalNext" type="button" aria-label="Imagen siguiente">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="modal-dots" id="modalDots"></div>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-badge mono">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        CREADO ÚNICAMENTE CON IDIFY
+      </div>
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <p class="modal-desc" id="modalDesc"></p>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container site-footer-inner">
+    <span class="foot-mark">idify — de la voz al prompt</span>
+    <div class="foot-links">
+      <a href="app.html">App</a>
+      <a href="precios.html">Precios</a>
+      <a href="cuenta.html">Cuenta</a>
+    </div>
+  </div>
+</footer>
+
+<script defer src="main.js?v=3"></script>
+</body>
+</html>

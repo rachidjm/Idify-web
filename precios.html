@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Precios — idify</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="styles.css?v=13">
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">idify</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="app.html">App</a>
+      <a href="cuenta.html">Cuenta</a>
+      <a href="precios.html" class="is-current">Precios</a>
+    </nav>
+    <a href="app.html" class="btn btn--primary btn--sm">Abrir la app</a>
+  </div>
+</header>
+
+<main id="main" class="container">
+  <div class="page-head" style="text-align:center;">
+    <h1>Un plan por cada frecuencia de uso.</h1>
+    <p class="lede" style="margin:14px auto 0;">Cifras de ejemplo. Todos los precios sin IVA.</p>
+    <span class="demo-badge" style="margin-top:16px;">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
+      MODO DEMO — los pagos son simulados
+    </span>
+  </div>
+
+  <div class="billing-toggle">
+    <div class="preset-seg" id="billingSeg">
+      <span class="preset-indicator" id="billingIndicator"></span>
+      <button type="button" class="active" data-period="mensual">Mensual</button>
+      <button type="button" data-period="anual">Anual — 2 meses gratis</button>
+    </div>
+  </div>
+
+  <div class="pricing-grid" style="padding-bottom:16px;">
+
+    <div class="card plan-card">
+      <div class="plan-name">Gratis</div>
+      <div class="plan-price">0 €<span>/mes</span></div>
+      <div class="plan-note">3 generaciones incluidas, sin caducidad</div>
+      <ul class="plan-features">
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Generación de prompt o skill</li>
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Corrección por sección, siempre gratis</li>
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Historial de tu cuenta</li>
+      </ul>
+      <a href="app.html" class="btn btn--ghost">Empezar gratis</a>
+    </div>
+
+    <div class="card plan-card plan-card--featured">
+      <span class="plan-badge">MÁS ELEGIDO</span>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price tabular" data-monthly="19" data-annual="15">19 €<span data-period-label>/mes</span></div>
+      <div class="plan-note">Para quien genera prompts cada semana</div>
+      <ul class="plan-features">
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>200 créditos al mes</li>
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Corrección por sección, siempre gratis</li>
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Soporte prioritario</li>
+      </ul>
+      <button type="button" class="btn btn--primary" data-plan="pro">Elegir Pro</button>
+    </div>
+
+    <div class="card plan-card">
+      <div class="plan-name">Empresa</div>
+      <div class="plan-price tabular" data-monthly="59" data-annual="49">59 €<span data-period-label>/mes</span></div>
+      <div class="plan-note">Equipos y uso intensivo</div>
+      <ul class="plan-features">
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>1.000 créditos al mes</li>
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Corrección por sección, siempre gratis</li>
+        <li><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Soporte dedicado</li>
+      </ul>
+      <button type="button" class="btn btn--ghost" data-plan="empresa">Elegir Empresa</button>
+    </div>
+
+  </div>
+
+  <div class="legal-grid">
+    <div class="card"><h3>¿Qué es un crédito?</h3><p>Cada generación consume 1 crédito. Corregir una sección es siempre gratis, en cualquier plan.</p></div>
+    <div class="card"><h3>Impuestos</h3><p>Los precios no incluyen IVA. El impuesto de tu país se añade en el checkout.</p></div>
+    <div class="card"><h3>Cancelación</h3><p>Cancela cuando quieras desde tu cuenta. Vuelves al plan gratis al instante.</p></div>
+    <div class="card"><h3>Contacto</h3><p>hola@idify.app — dudas de facturación en menos de 24h.</p></div>
+  </div>
+</main>
+
+<!-- ---------- Modal: checkout simulado ---------- -->
+<div class="modal-overlay" id="checkoutModal" hidden>
+  <div class="modal-panel narrow" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <button class="modal-close" id="checkoutClose" type="button" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="modal-body">
+      <div class="demo-badge" style="margin-bottom:14px;">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
+        MODO DEMO — los pagos son simulados, no se cobra nada
+      </div>
+      <h3 class="modal-title" id="checkoutTitle">Confirmar plan</h3>
+      <p class="modal-desc" id="checkoutDesc"></p>
+      <div class="fake-card">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.4"/></svg>
+        4242 4242 4242 4242 · 12/29 · 123
+      </div>
+      <button type="button" class="btn btn--primary" style="width:100%;" id="checkoutConfirm">Simular pago</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container site-footer-inner">
+    <span class="foot-mark">idify — de la voz al prompt</span>
+    <div class="foot-links">
+      <a href="app.html">App</a>
+      <a href="precios.html">Precios</a>
+      <a href="cuenta.html">Cuenta</a>
+    </div>
+  </div>
+</footer>
+
+<script defer src="precios.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuenta — idify</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="styles.css?v=13">
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">idify</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="app.html">App</a>
+      <a href="cuenta.html" class="is-current">Cuenta</a>
+      <a href="precios.html">Precios</a>
+    </nav>
+    <div class="account-menu topbar-account">
+      <span class="credits-pill"><span class="dot"></span><b id="creditsCount">—</b> créditos</span>
+      <button type="button" class="account-btn" id="accountMenuBtn">
+        <span id="accountEmail">…</span>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="13" height="13"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="account-drop" id="accountDrop">
+        <a href="app.html">Abrir la app</a>
+        <a href="precios.html">Precios</a>
+        <button type="button" id="logoutBtn">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="container">
+  <div class="account-head">
+    <div class="eyebrow">Cuenta</div>
+    <h1 id="accountHeaderEmail">…</h1>
+  </div>
+
+  <div class="account-grid" style="padding:24px 0 96px;">
+    <div>
+      <div class="card panel-pad" style="margin-bottom:18px;">
+        <div class="panel-head">
+          <h2>Plan actual</h2>
+          <span class="demo-badge">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
+            MODO DEMO
+          </span>
+        </div>
+
+        <div class="spec-row"><span class="label">Plan</span><span class="value" id="planName">—</span></div>
+        <div class="spec-row"><span class="label">Precio</span><span class="value" id="planPrice">—</span></div>
+        <div class="spec-row"><span class="label">Renovación</span><span class="value" id="planRenewal">—</span></div>
+
+        <div style="margin:18px 0;">
+          <div class="spec-row" style="border:none; padding-bottom:0;">
+            <span class="label">Créditos</span><span class="value" id="creditsLabel">—</span>
+          </div>
+          <div class="credit-bar"><div class="credit-bar-fill" id="creditsBarFill" style="width:0%"></div></div>
+        </div>
+
+        <div class="row-end" style="justify-content:flex-start; gap:10px; margin-top:20px;">
+          <a href="precios.html" class="btn btn--primary">Mejorar plan</a>
+          <button type="button" class="btn btn--ghost" id="cancelPlanBtn" hidden>Cancelar</button>
+        </div>
+        <p id="cancelNote" class="mono" hidden style="font-size:11.5px; color:var(--text-faint); margin-top:12px;">Has vuelto al plan gratis.</p>
+      </div>
+
+      <div class="card panel-pad">
+        <div class="panel-head"><h2>Historial</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Evento</th><th>Coste</th></tr></thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card panel-pad help-card" style="margin-bottom:18px;">
+        <div class="panel-head"><h2>Cómo funciona el gratis</h2></div>
+        <p>Los 3 créditos gratis se gastan solo al generar — 1 crédito por generación.</p>
+        <p>Corregir una sección es siempre gratis, incluso ya en un plan de pago.</p>
+      </div>
+
+      <div class="card panel-pad help-card">
+        <div class="panel-head"><h2>¿Dudas con tu plan?</h2></div>
+        <p>Facturación, cambios de plan o cualquier otra duda:</p>
+        <p><a href="mailto:hola@idify.app">hola@idify.app</a> — respuesta en menos de 24h.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container site-footer-inner">
+    <span class="foot-mark">idify — de la voz al prompt</span>
+    <div class="foot-links">
+      <a href="app.html">App</a>
+      <a href="precios.html">Precios</a>
+      <a href="cuenta.html">Cuenta</a>
+    </div>
+  </div>
+</footer>
+
+<script defer src="cuenta.js?v=1"></script>
+</body>
+</html>
