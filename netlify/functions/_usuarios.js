@@ -2,7 +2,7 @@ import { getStore } from '@netlify/blobs';
 
 /* Precios de ejemplo — sin cerrar todavía con Rachid, ver intake-template.md */
 export const PLANES = {
-  gratis: { nombre: 'Gratis', creditos: 3, precio: 0 },
+  gratis: { nombre: 'Gratis', creditos: 10, precio: 0 },
   pro: { nombre: 'Pro', creditos: 200, precio: 19 },
   empresa: { nombre: 'Empresa', creditos: 1000, precio: 59 },
 };
