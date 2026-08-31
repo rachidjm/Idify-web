@@ -225,6 +225,18 @@
   function toggleFallback() { $("#fallbackBox").classList.toggle("show"); }
   function toggleTranscript() { $("#transcriptBox").classList.toggle("show"); }
 
+  /* ---------- Borra la idea actual (texto y transcripción) sin tocar la plantilla
+     elegida — para empezar de cero tras un error o una transcripción equivocada. ---------- */
+  function limpiarIdea() {
+    $("#ideaInput").value = "";
+    $("#fallbackBox").classList.remove("show");
+    $("#transcriptToggleWrap").hidden = true;
+    $("#transcriptBox").textContent = "";
+    $("#transcriptBox").classList.remove("show");
+    state.liveTranscript = "";
+    setStatus("");
+  }
+
   function toggleLiveCaption() {
     state.showLiveCaption = !state.showLiveCaption;
     $("#liveCaptionToggle").setAttribute("aria-pressed", String(state.showLiveCaption));
@@ -299,6 +311,12 @@
     state.liveTranscript = "";
     state.recording = true;
     state.timerSecs = 0;
+    // Limpia cualquier resto de un intento anterior (transcripción, error) para
+    // que la pantalla no confunda mientras se graba la idea nueva.
+    $("#transcriptToggleWrap").hidden = true;
+    $("#transcriptBox").textContent = "";
+    $("#transcriptBox").classList.remove("show");
+    setStatus("");
     $("#micDial").classList.add("is-live");
     $("#micDial").setAttribute("aria-pressed", "true");
     $("#recorder").classList.add("is-live");
@@ -328,8 +346,15 @@
     $("#fallbackToggle").hidden = false;
     $("#cancelRecordingBtn").hidden = true;
     safe(() => state.recognition.stop(), "recognition.stop");
+    // No se envía a generar automáticamente: se deja el texto reconocido listo para
+    // revisar o corregir (el reconocimiento de voz se equivoca a veces) antes de
+    // gastar créditos en una generación.
     setTimeout(() => {
-      if (state.liveTranscript.trim()) procesarPipeline(state.liveTranscript.trim());
+      const texto = state.liveTranscript.trim();
+      if (!texto) return;
+      $("#ideaInput").value = texto;
+      $("#fallbackBox").classList.add("show");
+      $("#ideaInput").focus();
     }, 300);
   }
 
@@ -398,6 +423,10 @@
         showAuth();
       } else {
         setStatus((data && data.error) || "Algo falló. Prueba de nuevo.");
+        // Deja la idea a mano para reintentar, corregirla o borrarla — no se pierde
+        // ni hay que volver a hablar/escribir todo de nuevo.
+        $("#ideaInput").value = idea;
+        $("#fallbackBox").classList.add("show");
       }
       return;
     }
@@ -969,6 +998,7 @@
     $("#fallbackToggle").addEventListener("click", toggleFallback);
     $("#transcriptToggleBtn").addEventListener("click", toggleTranscript);
     $("#fallbackGenerate").addEventListener("click", () => procesarPipeline($("#ideaInput").value.trim()));
+    $("#fallbackClear").addEventListener("click", limpiarIdea);
     $("#copyBtn").addEventListener("click", copiarResultado);
     $("#downloadBtn").addEventListener("click", descargarResultado);
     $("#restartBtn").addEventListener("click", reiniciar);

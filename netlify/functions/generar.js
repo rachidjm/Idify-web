@@ -120,8 +120,9 @@ async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
     } else {
       // Nivel difícil: el JSON incluye el SKILL.md completo MÁS varios archivos de
       // apoyo — con el límite por defecto (2000) la respuesta se corta a mitad y el
-      // JSON queda incompleto (json_invalido). Necesita bastante más margen.
-      const rawPaquete = await llamarIA(conEnfoquePorCategoria(systemRedaccionSkillPaquete(), categoria), JSON.stringify(secciones), { json: true, maxTokens: 8000 });
+      // JSON queda incompleto (json_invalido). 4096 da margen sin disparar la latencia
+      // de la llamada más de la cuenta (una función serverless tiene un tiempo límite).
+      const rawPaquete = await llamarIA(conEnfoquePorCategoria(systemRedaccionSkillPaquete(), categoria), JSON.stringify(secciones), { json: true, maxTokens: 4096 });
       const paquete = parseJSONSeguro(rawPaquete);
       resultado_final = paquete.skillMd || '';
       archivos = Array.isArray(paquete.archivos) ? paquete.archivos : [];
@@ -130,8 +131,10 @@ async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
     // Capa 3 (mejor esfuerzo, no gasta crédito aparte ni hace fallar la generación si
     // se cae): redacta la caja "Prompt para usar esta skill" con el mismo nivel de
     // detalle que un ejemplo real de esa skill, sin copiar su nicho ni sus datos.
+    // Se salta en nivel difícil: ya es la llamada más lenta, y sumarle esta segunda
+    // llamada de IA corre el riesgo de superar el tiempo límite de la función.
     let promptDeUso = null;
-    const systemUso = plantillaId ? systemPromptDeUso(plantillaId) : null;
+    const systemUso = (plantillaId && nivel !== 'dificil') ? systemPromptDeUso(plantillaId) : null;
     if (systemUso) {
       try {
         promptDeUso = await llamarIA(systemUso, JSON.stringify(secciones));
