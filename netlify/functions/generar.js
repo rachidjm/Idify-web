@@ -116,9 +116,12 @@ async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
     if (nivel === 'facil') {
       resultado_final = await llamarIA(conEnfoquePorCategoria(systemRedaccion('skill'), categoria), JSON.stringify(secciones));
     } else if (nivel === 'media') {
-      resultado_final = await llamarIA(conEnfoquePorCategoria(systemRedaccionSkillDetallada(), categoria), JSON.stringify(secciones));
+      resultado_final = await llamarIA(conEnfoquePorCategoria(systemRedaccionSkillDetallada(), categoria), JSON.stringify(secciones), { maxTokens: 3000 });
     } else {
-      const rawPaquete = await llamarIA(conEnfoquePorCategoria(systemRedaccionSkillPaquete(), categoria), JSON.stringify(secciones), { json: true });
+      // Nivel difícil: el JSON incluye el SKILL.md completo MÁS varios archivos de
+      // apoyo — con el límite por defecto (2000) la respuesta se corta a mitad y el
+      // JSON queda incompleto (json_invalido). Necesita bastante más margen.
+      const rawPaquete = await llamarIA(conEnfoquePorCategoria(systemRedaccionSkillPaquete(), categoria), JSON.stringify(secciones), { json: true, maxTokens: 8000 });
       const paquete = parseJSONSeguro(rawPaquete);
       resultado_final = paquete.skillMd || '';
       archivos = Array.isArray(paquete.archivos) ? paquete.archivos : [];
