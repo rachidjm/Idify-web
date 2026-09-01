@@ -75,19 +75,22 @@ async function generarPrompt(email, usuario, idea) {
    de generar el resultado caro -> si no llegan, no se ejecuta nada más -> si llegan, se
    descuentan y se genera -> si falla después de descontar, se reembolsa. */
 async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
+  console.log(`generar.js: empieza generarSkill (plantilla=${!!plantilla})`);
   let secciones, nivel, categoria;
+  const t0 = Date.now();
   try {
     const systemExtraccionFinal = conPlantillaDePartida(systemExtraccion('skill'), plantilla);
     const mensajeUsuario = plantilla
       ? `Secciones de la plantilla de partida:\n${JSON.stringify(plantilla)}\n\nLo que dijo el usuario:\n${idea}`
       : idea;
     const rawExtraccion = await llamarIA(systemExtraccionFinal, mensajeUsuario, { json: true });
+    console.log(`generar.js: extracción terminada en ${Date.now() - t0}ms`);
     const extraido = parseJSONSeguro(rawExtraccion);
     secciones = extraido.secciones || [];
     nivel = NIVELES_VALIDOS.includes(extraido.nivel) ? extraido.nivel : 'facil';
     categoria = CATEGORIAS_SKILL.includes(extraido.categoria) ? extraido.categoria : 'personalizado';
   } catch (e) {
-    console.error('generar.js (extracción skill) failed', e);
+    console.error(`generar.js (extracción skill) failed tras ${Date.now() - t0}ms`, e);
     return humanError('Ahora mismo no puedo procesarlo. Inténtalo de nuevo en un momento.', 502);
   }
 
@@ -108,6 +111,7 @@ async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
   usuario.creditos -= coste;
   await guardarUsuario(email, usuario);
 
+  const t1 = Date.now();
   try {
     let resultado_final;
     let archivos = null;
@@ -126,6 +130,7 @@ async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
       resultado_final = paquete.skillMd || '';
       archivos = Array.isArray(paquete.archivos) ? paquete.archivos : [];
     }
+    console.log(`generar.js: redacción (nivel=${nivel}) terminada en ${Date.now() - t1}ms`);
 
     // Capa 3 DESACTIVADA por ahora: los logs de Netlify confirmaron que las skills
     // con plantilla (extracción + redacción + esta tercera llamada) tardaban los
@@ -141,7 +146,7 @@ async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
 
     return json({ secciones, resultado_final, archivos, nivel, categoria, coste, promptDeUso, creditos: usuario.creditos });
   } catch (e) {
-    console.error('generar.js (redacción skill) failed', e);
+    console.error(`generar.js (redacción skill) failed tras ${Date.now() - t1}ms`, e);
     usuario.creditos += coste;
     await guardarUsuario(email, usuario);
     return humanError('Ahora mismo no puedo procesarlo. Inténtalo de nuevo en un momento.', 502);
