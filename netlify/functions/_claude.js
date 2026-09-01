@@ -4,8 +4,18 @@ const MODEL = 'claude-haiku-4-5-20251001';
    dentro (confirmado: 3 ejecuciones seguidas con Duration exacto de 30000ms y cero
    errores). Un fetch() sin límite propio puede quedarse esperando indefinidamente si
    la API tarda o no responde — este timeout hace que falle con un error claro y
-   capturable bastante antes de esos 30s, en vez de dejar que mate la función entera. */
-const TIMEOUT_MS = 13000;
+   capturable bastante antes de esos 30s, en vez de dejar que mate la función entera.
+
+   Antes este límite estaba en 13s pensando en dejar hueco para un fallback a Gemini
+   tras un Claude colgado — pero se confirmó que incluso una única llamada (sin
+   segunda llamada de por medio) puede tardar más de 13s de forma legítima, no
+   colgada: pedirle a Haiku clasificar Y redactar el documento completo en una
+   respuesta es bastante contenido, y a su velocidad real de generación eso a veces
+   necesita 15-25s. Bajarlo a 13s solo estaba cortando llamadas que habrían acabado
+   bien. Como el fallback a Gemini no está activo en producción (falta la clave ahí),
+   no hay nada que proteger recortando este margen — mejor darle a Claude el máximo
+   tiempo posible dentro del límite real de Netlify. */
+const TIMEOUT_MS = 26000;
 
 export async function llamarClaude(system, prompt, maxTokens = 2000) {
   const controller = new AbortController();
