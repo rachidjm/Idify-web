@@ -223,19 +223,6 @@
   }
 
   function toggleFallback() { $("#fallbackBox").classList.toggle("show"); }
-  function toggleTranscript() { $("#transcriptBox").classList.toggle("show"); }
-
-  /* ---------- Borra la idea actual (texto y transcripción) sin tocar la plantilla
-     elegida — para empezar de cero tras un error o una transcripción equivocada. ---------- */
-  function limpiarIdea() {
-    $("#ideaInput").value = "";
-    $("#fallbackBox").classList.remove("show");
-    $("#transcriptToggleWrap").hidden = true;
-    $("#transcriptBox").textContent = "";
-    $("#transcriptBox").classList.remove("show");
-    state.liveTranscript = "";
-    setStatus("");
-  }
 
   function toggleLiveCaption() {
     state.showLiveCaption = !state.showLiveCaption;
@@ -311,11 +298,8 @@
     state.liveTranscript = "";
     state.recording = true;
     state.timerSecs = 0;
-    // Limpia cualquier resto de un intento anterior (transcripción, error) para
-    // que la pantalla no confunda mientras se graba la idea nueva.
-    $("#transcriptToggleWrap").hidden = true;
-    $("#transcriptBox").textContent = "";
-    $("#transcriptBox").classList.remove("show");
+    // Limpia el error del intento anterior para que la pantalla no confunda
+    // mientras se graba la idea nueva.
     setStatus("");
     $("#micDial").classList.add("is-live");
     $("#micDial").setAttribute("aria-pressed", "true");
@@ -398,8 +382,6 @@
     hidePopover();
     $("#stepsPanel").hidden = false;
     $("#stepsPanel").classList.add("show");
-    $("#transcriptToggleWrap").hidden = false;
-    $("#transcriptBox").textContent = idea;
     setStatus("");
 
     renderSteps("entender", []);
@@ -900,8 +882,6 @@
     ocultarUsoSkill();
     ocultarArchivosSkill();
     hidePopover();
-    $("#transcriptToggleWrap").hidden = true;
-    $("#transcriptBox").classList.remove("show");
     $("#fallbackBox").classList.remove("show");
     $("#ideaInput").value = "";
     state.secciones = [];
@@ -996,9 +976,7 @@
     $("#copyUsoSkillBtn").addEventListener("click", () => copiarTexto($("#usoSkillOutput").textContent));
     $("#downloadZipBtn").addEventListener("click", descargarZipSkillActual);
     $("#fallbackToggle").addEventListener("click", toggleFallback);
-    $("#transcriptToggleBtn").addEventListener("click", toggleTranscript);
     $("#fallbackGenerate").addEventListener("click", () => procesarPipeline($("#ideaInput").value.trim()));
-    $("#fallbackClear").addEventListener("click", limpiarIdea);
     $("#copyBtn").addEventListener("click", copiarResultado);
     $("#downloadBtn").addEventListener("click", descargarResultado);
     $("#restartBtn").addEventListener("click", reiniciar);
