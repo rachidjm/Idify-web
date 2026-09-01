@@ -20,6 +20,10 @@ export async function llamarClaude(system, prompt, maxTokens = 2000) {
         'content-type': 'application/json',
         'x-api-key': process.env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01',
+        // La segunda llamada seguida a la misma API se colgaba sin respuesta — huele a
+        // que hereda una conexión keep-alive muerta de la primera. Fuerza una conexión
+        // nueva en cada llamada en vez de reutilizar una.
+        'connection': 'close',
       },
       body: JSON.stringify({
         model: MODEL,
