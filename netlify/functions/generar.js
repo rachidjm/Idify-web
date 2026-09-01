@@ -11,7 +11,6 @@ import {
   CATEGORIAS_SKILL,
   conEnfoquePorCategoria,
   conPlantillaDePartida,
-  systemPromptDeUso,
 } from './_prompts.js';
 
 const IDEA_MAX_LEN = 4000;
@@ -128,20 +127,14 @@ async function generarSkill(email, usuario, idea, plantilla, plantillaId) {
       archivos = Array.isArray(paquete.archivos) ? paquete.archivos : [];
     }
 
-    // Capa 3 (mejor esfuerzo, no gasta crédito aparte ni hace fallar la generación si
-    // se cae): redacta la caja "Prompt para usar esta skill" con el mismo nivel de
-    // detalle que un ejemplo real de esa skill, sin copiar su nicho ni sus datos.
-    // Se salta en nivel difícil: ya es la llamada más lenta, y sumarle esta segunda
-    // llamada de IA corre el riesgo de superar el tiempo límite de la función.
-    let promptDeUso = null;
-    const systemUso = (plantillaId && nivel !== 'dificil') ? systemPromptDeUso(plantillaId) : null;
-    if (systemUso) {
-      try {
-        promptDeUso = await llamarIA(systemUso, JSON.stringify(secciones));
-      } catch (e) {
-        console.warn('generar.js (prompt de uso) falló, se usa el texto local sin IA', e.message);
-      }
-    }
+    // Capa 3 DESACTIVADA por ahora: los logs de Netlify confirmaron que las skills
+    // con plantilla (extracción + redacción + esta tercera llamada) tardaban los
+    // 30000 ms exactos y la función moría en seco, sin ni siquiera loguear un error
+    // (Netlify mata la función de golpe al pasarse del límite). Con solo dos llamadas
+    // seguidas cabe de sobra; el cliente ya sabe construir "Prompt para usar esta
+    // skill" sin IA como respaldo. Reactivar systemPromptDeUso (ver _prompts.js)
+    // requeriría antes mover esto a background function o similar.
+    const promptDeUso = null;
 
     registrarHistorial(usuario, `generar-skill-${nivel}`, coste);
     await guardarUsuario(email, usuario);
