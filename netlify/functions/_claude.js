@@ -5,7 +5,7 @@ const MODEL = 'claude-haiku-4-5-20251001';
    errores). Un fetch() sin límite propio puede quedarse esperando indefinidamente si
    la API tarda o no responde — este timeout hace que falle con un error claro y
    capturable bastante antes de esos 30s, en vez de dejar que mate la función entera. */
-const TIMEOUT_MS = 18000;
+const TIMEOUT_MS = 13000;
 
 export async function llamarClaude(system, prompt, maxTokens = 2000) {
   const controller = new AbortController();
