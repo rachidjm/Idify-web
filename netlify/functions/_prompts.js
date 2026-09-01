@@ -1,67 +1,70 @@
-/* Los tres prompts maestros de reference/06-recipe-voz-a-prompt.md, verbatim. */
+/* Prompts unificados: cada operación (generar, corregir) es UNA sola llamada a la IA
+   en vez de dos seguidas. Antes eran dos pasos (extraer -> redactar), pero en producción
+   la segunda llamada seguida a la misma API se colgaba sin responder de forma 100%
+   reproducible (confirmado con logs: la primera siempre iba bien, la segunda se colgaba
+   siempre, con distintos prompts y distintos días) — un fallo de la infraestructura, no
+   del contenido del prompt. Unificar en una sola llamada elimina el problema de raíz. */
 
-export function systemExtraccion(preset) {
-  if (preset === 'skill') {
-    return `Eres un extractor de información para un sistema que genera Claude Skills. El usuario describe, hablado, un flujo de trabajo que quiere convertir en skill. Organízalo en secciones claras, sin relleno. Además, clasifica la dificultad de esa skill en "facil", "media" o "dificil": "facil" si es un flujo simple de un solo propósito; "media" si tiene varios pasos con matices o casos especiales; "dificil" si necesitaría archivos de apoyo (plantillas, scripts o documentación de referencia) además del SKILL.md para funcionar bien. Clasifica también la idea en UNA categoría: "automatizacion_servicio" (bots o flujos de atención al cliente y soporte), "creacion_pagina_producto" (páginas de venta, landing pages o fichas de producto), "automatizacion_meta_ads" (anuncios de Facebook/Instagram, segmentación de audiencia o campañas), o "personalizado" si no encaja claramente en ninguna de las anteriores — no fuerces una categoría que no corresponda. Devuelve SOLO un JSON, sin texto adicional ni backticks:
-{"nivel":"facil|media|dificil","categoria":"automatizacion_servicio|creacion_pagina_producto|automatizacion_meta_ads|personalizado","secciones":[{"id":"nombre","titulo":"Nombre de la skill","contenido":"..."},{"id":"activacion","titulo":"Cuándo se activa","contenido":"..."},{"id":"pasos","titulo":"Pasos a seguir","contenido":"..."},{"id":"restricciones","titulo":"Restricciones","contenido":"..."},{"id":"formato","titulo":"Formato de salida","contenido":"..."}]}
-Si falta información, complétala con una suposición razonable y añade " (supuesto)" al final de esa sección. Responde en el mismo idioma en que habló el usuario.`;
-  }
-  return `Eres un extractor de información para un sistema que genera prompts de IA. El usuario te da una idea hablada o escrita, a veces desordenada. Organízala en secciones claras, conservando detalles relevantes, eliminando solo relleno y muletillas. Devuelve SOLO un JSON, sin texto adicional ni backticks:
-{"secciones":[{"id":"rol","titulo":"Rol","contenido":"..."},{"id":"contexto","titulo":"Contexto","contenido":"..."},{"id":"tarea","titulo":"Tarea principal","contenido":"..."},{"id":"restricciones","titulo":"Restricciones","contenido":"..."},{"id":"formato","titulo":"Formato de salida","contenido":"..."}]}
+export function systemPromptUnificado() {
+  return `Eres un experto en prompt engineering. A partir de una idea hablada o escrita por el usuario, a veces desordenada, debes hacer dos cosas en una sola respuesta: (1) organizarla en secciones claras, conservando detalles relevantes, eliminando solo relleno y muletillas; (2) escribir a partir de esas secciones UN prompt profesional, fluido y bien estructurado, listo para copiar y pegar en Claude u otro LLM.
+
+Devuelve SOLO un JSON, sin texto adicional ni backticks:
+{"secciones":[{"id":"rol","titulo":"Rol","contenido":"..."},{"id":"contexto","titulo":"Contexto","contenido":"..."},{"id":"tarea","titulo":"Tarea principal","contenido":"..."},{"id":"restricciones","titulo":"Restricciones","contenido":"..."},{"id":"formato","titulo":"Formato de salida","contenido":"..."}],"resultado_final":"texto final del prompt, en texto plano dentro del JSON"}
+
 Si falta información, complétala con tu mejor suposición razonable y añade " (supuesto)" al final de esa sección. Responde en el mismo idioma en que habló el usuario.`;
 }
 
-export function systemRedaccion(preset) {
-  if (preset === 'skill') {
-    return `Eres un experto en crear Claude Skills. A partir de las secciones ya organizadas, genera el contenido completo de un archivo SKILL.md: frontmatter con "name" y "description" (específica, para que Claude sepa activarla en el momento correcto), y cuerpo con cuándo se usa, pasos, restricciones y formato de salida. Responde SOLO con el contenido final del SKILL.md, sin explicaciones ni backticks, en el mismo idioma de las secciones.`;
-  }
-  return `Eres un experto en prompt engineering. A partir de las secciones ya organizadas, escribe UN prompt profesional, fluido y bien estructurado, listo para copiar y pegar en Claude u otro LLM. Responde SOLO con el texto final del prompt, sin explicaciones ni backticks, en el mismo idioma de las secciones.`;
-}
-
-export const SYSTEM_CORRECCION = `Eres un asistente que corrige una sección específica de un análisis. Te doy el título, el contenido actual, y una corrección del usuario. Devuelve SOLO el nuevo contenido corregido: texto plano, sin comillas, sin JSON, sin explicaciones.`;
-
-export function mensajeCorreccion(titulo, contenidoActual, correccion, fragmento) {
-  let msg = `Sección: ${titulo}\nContenido actual: ${contenidoActual}\n`;
-  if (fragmento) msg += `Fragmento exacto que el usuario señaló como incorrecto: "${fragmento}"\n`;
-  msg += `Corrección del usuario: ${correccion}`;
-  return msg;
-}
-
-/* Coste en créditos según el nivel de dificultad detectado para una skill (ver systemExtraccion). */
+/* Coste en créditos según el nivel de dificultad que la IA detecta para una skill. */
 export const NIVEL_COSTE = { facil: 1, media: 2, dificil: 5 };
-
-export function systemRedaccionSkillDetallada() {
-  return `Eres un experto en crear Claude Skills. A partir de las secciones ya organizadas, genera el contenido completo de un archivo SKILL.md, con más detalle del habitual: frontmatter con "name" y "description" (específica, para que Claude sepa activarla en el momento correcto), y un cuerpo desarrollado con matices en los pasos, casos especiales en las restricciones, y al menos un ejemplo concreto de uso. Responde SOLO con el contenido final del SKILL.md, sin explicaciones ni backticks, en el mismo idioma de las secciones.`;
-}
-
-export function systemRedaccionSkillPaquete() {
-  return `Eres un experto en crear Claude Skills complejas que necesitan archivos de apoyo además del SKILL.md principal. A partir de las secciones ya organizadas, genera el SKILL.md (frontmatter con "name" y "description" específica) y los archivos adicionales de reference/, templates/ o scripts/ que esa skill necesite para funcionar bien. Devuelve SOLO un JSON, sin texto adicional ni backticks:
-{"skillMd":"contenido completo del SKILL.md","archivos":[{"ruta":"reference/ejemplo.md","contenido":"..."}]}
-Usa rutas relativas que empiecen por reference/, templates/ o scripts/. Responde en el mismo idioma de las secciones.`;
-}
-
-/* Categoría detectada por la Capa 1 (ver systemExtraccion) -> instrucción extra para la
-   Capa 2, que ajusta el enfoque del SKILL.md sin cambiar el motor genérico ya existente.
-   "personalizado" no añade nada — usa exactamente el motor genérico, tal cual. */
 export const CATEGORIAS_SKILL = ['automatizacion_servicio', 'creacion_pagina_producto', 'automatizacion_meta_ads', 'personalizado'];
 
-const ENFOQUE_CATEGORIA = {
-  automatizacion_servicio: 'Pon énfasis en el tono de respuesta, en casos de uso de atención al cliente, y en cuándo escalar la conversación a un humano.',
-  creacion_pagina_producto: 'Pon énfasis en la estructura de contenido, en SEO básico y en las llamadas a la acción.',
-  automatizacion_meta_ads: 'Pon énfasis en la segmentación de audiencia, en los formatos de anuncio y en las métricas que hay que vigilar.',
-  personalizado: '',
-};
+export function systemSkillUnificado() {
+  return `Eres un experto en construir Claude Skills a partir de la idea hablada o escrita de un usuario. En una sola respuesta debes: (1) organizar la idea en secciones claras, sin relleno; (2) clasificar la dificultad de la skill; (3) clasificar la idea en una categoría; (4) redactar directamente el contenido final del archivo SKILL.md a partir de esas secciones.
 
-export function conEnfoquePorCategoria(systemBase, categoria) {
-  const enfoque = ENFOQUE_CATEGORIA[categoria];
-  return enfoque ? systemBase + '\n\n' + enfoque : systemBase;
+Dificultad — clasifícala en "facil", "media" o "dificil":
+- "facil": flujo simple de un solo propósito. El SKILL.md es el contenido habitual: frontmatter con "name" y "description" específica, y cuerpo con cuándo se usa, pasos, restricciones y formato de salida.
+- "media": tiene varios pasos con matices o casos especiales. Redacta el SKILL.md con más detalle de lo habitual: matices en los pasos, casos especiales en las restricciones, y al menos un ejemplo concreto de uso.
+- "dificil": necesitaría archivos de apoyo (plantillas, scripts o documentación de referencia) además del SKILL.md para funcionar bien de verdad. Genera también esos archivos adicionales.
+
+Categoría — clasifica la idea en UNA de estas cuatro, y ajusta el enfoque del SKILL.md según cuál sea (si es "personalizado", no añadas ningún enfoque especial, usa el planteamiento genérico de arriba tal cual):
+- "automatizacion_servicio" (bots o flujos de atención al cliente y soporte): pon énfasis en el tono de respuesta, en casos de uso de atención al cliente, y en cuándo escalar la conversación a un humano.
+- "creacion_pagina_producto" (páginas de venta, landing pages o fichas de producto): pon énfasis en la estructura de contenido, en SEO básico y en las llamadas a la acción.
+- "automatizacion_meta_ads" (anuncios de Facebook/Instagram, segmentación de audiencia o campañas): pon énfasis en la segmentación de audiencia, en los formatos de anuncio y en las métricas que hay que vigilar.
+- "personalizado": si no encaja claramente en ninguna de las anteriores — no fuerces una categoría que no corresponda.
+
+Devuelve SOLO un JSON, sin texto adicional ni backticks:
+{"nivel":"facil|media|dificil","categoria":"automatizacion_servicio|creacion_pagina_producto|automatizacion_meta_ads|personalizado","secciones":[{"id":"nombre","titulo":"Nombre de la skill","contenido":"..."},{"id":"activacion","titulo":"Cuándo se activa","contenido":"..."},{"id":"pasos","titulo":"Pasos a seguir","contenido":"..."},{"id":"restricciones","titulo":"Restricciones","contenido":"..."},{"id":"formato","titulo":"Formato de salida","contenido":"..."}],"resultado_final":"contenido completo del SKILL.md, en texto plano dentro del JSON","archivos":[{"ruta":"reference/ejemplo.md","contenido":"..."}]}
+
+El campo "archivos" solo lleva elementos si el nivel es "dificil" (rutas que empiecen por reference/, templates/ o scripts/); en los demás niveles, usa un array vacío [].
+
+Si falta información en la idea del usuario, complétala con una suposición razonable y añade " (supuesto)" al final de esa sección. Responde en el mismo idioma en que habló el usuario.`;
 }
 
 /* Plantilla de partida elegida por el usuario ANTES de hablar (ver app.js, PLANTILLAS_SKILL).
-   La Capa 1 debe ajustarla/completarla con lo que diga, sin perder lo que no contradiga. */
+   La IA debe ajustarla/completarla con lo que diga, sin perder lo que no contradiga. */
 export function conPlantillaDePartida(systemBase, plantilla) {
   if (!plantilla) return systemBase;
   return systemBase + '\n\nEl usuario ha elegido una plantilla de partida ya rellena, con sus propias secciones. Ajusta y completa esas secciones con lo que diga a continuación: conserva el contenido de la plantilla en todo lo que no contradiga, y sustituye solo la parte que el usuario contradiga explícitamente con su voz.';
+}
+
+/* Corrección: corrige la sección señalada Y redacta de nuevo el resultado final completo
+   en la misma llamada (antes eran dos llamadas seguidas — mismo problema de fondo). */
+export function systemCorreccionUnificada(preset) {
+  const tipo = preset === 'skill' ? 'el archivo SKILL.md' : 'el prompt final';
+  return `Eres un asistente que corrige una sección específica de un análisis ya organizado en secciones, y que después redacta de nuevo ${tipo} completo a partir de esas secciones (igual que se redactó la primera vez). Te doy todas las secciones actuales, cuál hay que corregir, y la corrección del usuario — puede venir en texto o dictada por voz, y puede señalar un fragmento exacto que está mal. Corrige SOLO el contenido de esa sección, sin tocar las demás.
+
+Devuelve SOLO un JSON, sin texto adicional ni backticks:
+{"secciones":[{"id":"...","titulo":"...","contenido":"..."}],"resultado_final":"..."}
+
+El array "secciones" debe tener exactamente las mismas secciones que te doy, en el mismo orden y la misma cantidad — solo cambia el contenido de la sección corregida. Responde en el mismo idioma de las secciones.`;
+}
+
+export function mensajeCorreccionUnificada(secciones, idSeccion, correccion, fragmento) {
+  const seccion = secciones.find((s) => s.id === idSeccion) || {};
+  let msg = `Secciones actuales:\n${JSON.stringify(secciones)}\n\nSección a corregir: id "${idSeccion}" (${seccion.titulo || ''})\n`;
+  if (fragmento) msg += `Fragmento exacto que el usuario señaló como incorrecto: "${fragmento}"\n`;
+  msg += `Corrección del usuario: ${correccion}`;
+  return msg;
 }
 
 /* Ejemplo real de petición de un usuario DISTINTO para cada una de las 5 skills de
@@ -97,9 +100,10 @@ Móntalo como un SaaS de suscripción con cuentas y créditos: un plan gratuito 
 Hazme también la página de inicio explicando el producto, con la sección de precios y las páginas legales básicas. Diseño profesional y sobrio. Publícalo en mi hosting cuando esté listo y pásame el enlace.`,
 };
 
-/* Capa 3 (opcional, solo si el usuario eligió una plantilla): redacta la caja "Prompt
-   para usar esta skill" con IA, usando el ejemplo de arriba solo como referencia de
-   estructura y nivel de detalle — nunca copiando su nicho ni sus datos concretos. */
+/* Capa 3 (DESACTIVADA por ahora en generar.js — ver el comentario allí): redactaría la
+   caja "Prompt para usar esta skill" con IA como tercera llamada. Se deja aquí lista
+   para reactivarse si en el futuro esto se mueve a una arquitectura que aguante una
+   llamada más (background function). */
 export function systemPromptDeUso(plantillaId) {
   const ejemplo = PLANTILLA_REFERENCIA[plantillaId];
   if (!ejemplo) return null;

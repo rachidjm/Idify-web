@@ -1,7 +1,8 @@
 import { readSessionEmail, json, humanError } from './_auth.js';
 import { getUsuario, registrarHistorial, guardarUsuario } from './_usuarios.js';
 import { llamarIA } from './_ia.js';
-import { systemRedaccion, SYSTEM_CORRECCION, mensajeCorreccion } from './_prompts.js';
+import { parseJSONSeguro } from './_claude.js';
+import { systemCorreccionUnificada, mensajeCorreccionUnificada } from './_prompts.js';
 
 const CORRECCION_MAX_LEN = 1000;
 
@@ -33,14 +34,24 @@ export default async (req) => {
   if (!usuario) return humanError('Sesión no válida.', 401);
 
   try {
-    // Corregir una sección es siempre gratis, en cualquier plan.
-    seccion.contenido = await llamarIA(SYSTEM_CORRECCION, mensajeCorreccion(seccion.titulo, seccion.contenido, correccion, fragmento || undefined));
-    const resultado_final = await llamarIA(systemRedaccion(preset), JSON.stringify(secciones));
+    // Corregir una sección es siempre gratis, en cualquier plan. Una sola llamada:
+    // corrige la sección Y redacta de nuevo el resultado final a la vez (antes eran
+    // dos llamadas seguidas, con el mismo riesgo de colgarse que en generar.js).
+    const raw = await llamarIA(
+      systemCorreccionUnificada(preset),
+      mensajeCorreccionUnificada(secciones, id, correccion, fragmento || undefined),
+      { json: true, maxTokens: 4096 },
+    );
+    const data = parseJSONSeguro(raw);
+    const seccionesNuevas = Array.isArray(data.secciones) && data.secciones.length === secciones.length
+      ? data.secciones
+      : secciones;
+    const resultado_final = data.resultado_final || '';
 
     registrarHistorial(usuario, `corregir-${preset}`, 0);
     await guardarUsuario(email, usuario);
 
-    return json({ secciones, resultado_final });
+    return json({ secciones: seccionesNuevas, resultado_final });
   } catch (e) {
     console.error('corregir.js failed', e);
     return humanError('No pude aplicar la corrección. Inténtalo de nuevo en un momento.', 502);
